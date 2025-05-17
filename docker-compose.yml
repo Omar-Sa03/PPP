@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  api:
+    build: ./api
+    container_name: foodadvisor-api
+    ports:
+      - "1337:1337"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=1337
+      - NODE_ENV=production
+      - DATABASE_CLIENT=sqlite
+      - DATABASE_FILENAME=.tmp/data.db
+      - STRAPI_ADMIN_CLIENT_URL=http://localhost:3000
+      - STRAPI_ADMIN_CLIENT_PREVIEW_SECRET=ARNFCb9zrC9ZHm5hZzCigWivD40icS4s
+    volumes:
+      - ./api/.tmp:/app/.tmp
+      - ./api/public/uploads:/app/public/uploads
+    restart: unless-stopped
+
+  client:
+    build: ./client
+    container_name: foodadvisor-client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:1337
+    restart: unless-stopped
