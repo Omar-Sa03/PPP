@@ -1,0 +1,12 @@
+# foodadvisor/api/Dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --production
+COPY . .
+# Build or seed as needed (FoodAdvisor includes seeding commands)
+RUN yarn build
+EXPOSE 1337
+ENV DATABASE_CLIENT=sqlite
+ENV DATABASE_FILENAME=./data/db.sqlite
+CMD ["yarn", "start"]
