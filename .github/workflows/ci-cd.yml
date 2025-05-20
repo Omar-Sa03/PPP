@@ -29,6 +29,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=FoodAdvisor
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.host.url=https://sonarcloud.io
 
       # 4.3.4 Build Strapi backend image
