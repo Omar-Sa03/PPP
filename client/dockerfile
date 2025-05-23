@@ -1,12 +1,12 @@
 # foodadvisor/client/Dockerfile
-FROM node:18-alpine AS builder
+FROM node:16 AS builder
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install
 COPY . .
 RUN yarn build
 
-FROM node:18-alpine
+FROM node:16
 WORKDIR /app
 COPY --from=builder /app . 
 EXPOSE 3000
