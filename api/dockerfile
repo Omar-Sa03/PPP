@@ -8,7 +8,8 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --production
 
-# 2) Copy the rest of the code and data.zip
+# 2) Copy the rest of the code and explicitly copy data.zip
+COPY data.zip /app/data.zip
 COPY . .
 
 # Debug: Verify data.zip exists
