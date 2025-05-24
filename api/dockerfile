@@ -14,11 +14,11 @@ COPY . .
 # 3) Build Strapi (moved before seeding since seeding now happens at runtime)
 RUN yarn build
 
+RUN mkdir -p /app/public/uploads && chmod -R 755 /app/public/uploads
+
 # 4) Create entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-RUN mkdir -p /app/public/uploads && chmod -R 755 /app/public/uploads
 
 # Expose port
 EXPOSE 1337
