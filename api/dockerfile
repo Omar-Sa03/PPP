@@ -18,6 +18,8 @@ RUN yarn build
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+RUN mkdir -p /app/public/uploads && chmod -R 755 /app/public/uploads
+
 # Expose port
 EXPOSE 1337
 
