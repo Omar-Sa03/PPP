@@ -11,11 +11,12 @@ RUN yarn install --production
 # 2) Copy the rest of the code and data.zip
 COPY . .
 
-# 3) Seed the DB (creates /app/data/db.sqlite)
-RUN yarn seed
-
-# 4) Build Strapi
+# 3) Build Strapi (moved before seeding since seeding now happens at runtime)
 RUN yarn build
+
+# 4) Create entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Expose port
 EXPOSE 1337
@@ -24,5 +25,5 @@ EXPOSE 1337
 ENV DATABASE_CLIENT=sqlite
 ENV DATABASE_FILENAME=./data/db.sqlite
 
-# 5) Start Strapi
-CMD ["yarn", "start"]
+# 5) Use entrypoint script instead of direct start
+ENTRYPOINT ["/entrypoint.sh"]
