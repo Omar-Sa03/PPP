@@ -14,7 +14,14 @@ jobs:
       # 4.3.1 Checkout your repo
       - name: Checkout code
         uses: actions/checkout@v3
-
+      - name: Install Git LFS (if needed)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git-lfs
+          git lfs install
+      - name: List files in api directory
+        run: ls -la ./api/
+        
       # 4.3.2 Install Node.js (v18)
       - name: Setup Node.js
         uses: actions/setup-node@v3
