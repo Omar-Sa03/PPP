@@ -11,6 +11,9 @@ RUN yarn install --production
 # 2) Copy the rest of the code and data.zip
 COPY . .
 
+# Debug: Verify data.zip exists
+RUN ls -la /app/data.zip
+
 # 3) Build Strapi (moved before seeding since seeding now happens at runtime)
 RUN yarn build
 
