@@ -1,0 +1,76 @@
+name: CI/CD Pipeline
+
+# Run on push to main or pull requests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      # 4.3.1 Checkout your repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 4.3.2 Install Node.js (v18)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # 4.3.3 Static code analysis with SonarCloud
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=PPP
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.host.url=https://sonarcloud.io
+
+      # 4.3.4 Build Strapi backend image
+      - name: Build backend container
+        run: docker build -t foodadvisor-backend:latest ./api
+
+      # 4.3.5 Build Next.js frontend image
+      - name: Build frontend container
+        run: docker build -t foodadvisor-frontend:latest ./client
+
+      # 4.3.6 Scan backend image for vulnerabilities
+      - name: Scan backend container (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'foodadvisor-backend:latest'
+          format: 'table'
+          exit-code: '1'          # Fail on HIGH/CRITICAL
+          severity: 'HIGH,CRITICAL'
+
+      # 4.3.7 Scan frontend image for vulnerabilities
+      - name: Scan frontend container (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'foodadvisor-frontend:latest'
+          format: 'table'
+          exit-code: '1'
+          severity: 'HIGH,CRITICAL'
+          
+      # 4.4.1 Log in to Docker Hub
+      - name: Docker Hub login
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | \
+            docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # 4.4.2 Tag and push both images
+      - name: Push containers to registry
+        run: |
+          docker tag foodadvisor-backend:latest \
+            ${{ secrets.DOCKER_USERNAME }}/foodadvisor-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/foodadvisor-backend:latest
+          docker tag foodadvisor-frontend:latest \
+            ${{ secrets.DOCKER_USERNAME }}/foodadvisor-frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/foodadvisor-frontend:latest
+#

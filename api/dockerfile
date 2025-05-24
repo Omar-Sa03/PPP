@@ -1,0 +1,29 @@
+# Use Node 16 as base image
+FROM node:16
+
+# Set working directory
+WORKDIR /app
+
+# 1) Copy only package files and install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install --production
+
+# 2) Copy the rest of the code and data.zip
+COPY . .
+COPY data.zip /app/data.zip  
+
+# 3) Seed the DB (creates /app/data/db.sqlite)
+RUN yarn seed
+
+# 4) Build Strapi
+RUN yarn build
+
+# Expose port
+EXPOSE 1337
+
+# Set environment variables
+ENV DATABASE_CLIENT=sqlite
+ENV DATABASE_FILENAME=./data/db.sqlite
+
+# 5) Start Strapi
+CMD ["yarn", "start"]

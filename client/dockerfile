@@ -1,0 +1,28 @@
+# Stage 1: Builder
+FROM node:16 AS builder
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+RUN yarn install
+
+COPY . .
+
+# Accept build-time variable
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
+RUN yarn build
+
+# Stage 2: Runtime
+FROM node:16
+WORKDIR /app
+
+COPY --from=builder /app .
+
+EXPOSE 3000
+ENV NODE_ENV=production
+
+# Also pass API URL to runtime, in case needed
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
+CMD ["yarn", "start"]
