@@ -1,12 +1,23 @@
-# foodadvisor/api/Dockerfile
 FROM node:16
 WORKDIR /app
+
+# 1) Copy only package files and install deps
 COPY package.json yarn.lock ./
 RUN yarn install --production
+
+# 2) Copy the rest of the code
 COPY . .
-# Build or seed as needed (FoodAdvisor includes seeding commands)
+
+# 3) Seed the DB (creates /app/data/db.sqlite)
+RUN yarn seed
+
+# 4) Build Strapi
 RUN yarn build
+
 EXPOSE 1337
+
 ENV DATABASE_CLIENT=sqlite
 ENV DATABASE_FILENAME=./data/db.sqlite
+
+# 5) Start Strapi
 CMD ["yarn", "start"]
