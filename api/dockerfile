@@ -8,21 +8,18 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --production
 
-# 2) Copy the rest of the code and explicitly copy data.zip
-COPY data.zip /app/data.zip
+# 2) Copy the rest of the code 
 COPY . .
 
-# Debug: Verify data.zip exists
-RUN ls -la /app/data.zip
 
 # 3) Build Strapi (moved before seeding since seeding now happens at runtime)
 RUN yarn build
 
+RUN yarn seed
+
 RUN mkdir -p /app/public/uploads && chmod -R 755 /app/public/uploads
 
-# 4) Create entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN yarn build
 
 # Expose port
 EXPOSE 1337
@@ -32,4 +29,4 @@ ENV DATABASE_CLIENT=sqlite
 ENV DATABASE_FILENAME=./data/db.sqlite
 
 # 5) Use entrypoint script instead of direct start
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["yarn", "start"]
