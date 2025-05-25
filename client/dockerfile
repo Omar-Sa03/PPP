@@ -20,7 +20,6 @@ WORKDIR /app
 COPY --from=builder /app .
 
 EXPOSE 3000
-ENV NODE_ENV=production
 
 # Also pass API URL to runtime, in case needed
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
