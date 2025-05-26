@@ -5,24 +5,16 @@ FROM node:16
 WORKDIR /app
 
 # 1) Copy only package files and install dependencies
-COPY package.json yarn.lock ./
-RUN yarn install 
-
-# 2) Copy the rest of the code 
 COPY . .
 
-RUN yarn seed
+RUN yarn install 
 
-RUN mkdir -p /app/public/uploads && chmod -R 755 /app/public/uploads
+RUN yarn seed
 
 RUN yarn build
 
 # Expose port
 EXPOSE 1337
-
-# Set environment variables
-ENV DATABASE_CLIENT=sqlite
-ENV DATABASE_FILENAME=./data/db.sqlite
 
 
 CMD ["yarn", "develop"]
