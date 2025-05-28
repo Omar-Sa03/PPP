@@ -107,7 +107,7 @@ export async function getRestaurants(key) {
     baseUrl = `${baseUrl}&locale=${localeCode}`;
   }
 
-  const res = await fetch(baseUrl,{ mode: 'no-cors' });
+  const res = await fetch(baseUrl);
   const restaurants = await res.json();
 
   return {
@@ -136,7 +136,7 @@ export async function getArticles(key) {
     baseUrl = `${baseUrl}&locale=${localeCode}`;
   }
 
-  const res = await fetch(baseUrl,{ mode: 'no-cors' });
+  const res = await fetch(baseUrl);
   const articles = await res.json();
 
   return { articles: articles.data, count: articles.meta.pagination.total };

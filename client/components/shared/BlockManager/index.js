@@ -143,7 +143,7 @@ const BlockManager = ({ blocks, contentType, pageData, type }) => {
                 {window.__NEXT_PUBLIC_API_URL && (
                   <Link
                     href={`${
-                      window.__NEXT_PUBLIC_API_URL || 'http://172.190.138.238:1337'
+                      window.__NEXT_PUBLIC_API_URL || 'http://localhost:1337'
                     }/admin/content-manager/${type}/api::${contentType}.${contentType}/${
                       pageData?.id
                     }?plugins[i18n][locale]=${query?.lang || 'en'}`}
