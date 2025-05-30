@@ -72,13 +72,13 @@ jobs:
 
       # Scan backend image
       - name: Snyk scan backend
-        run: snyk container test foodadvisor-backend:latest --file=./api/Dockerfile --severity-threshold=high
+        run: snyk container test foodadvisor-backend:latest --file=./api/dockerfile --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       # Scan frontend image
       - name: Snyk scan frontend
-        run: snyk container test foodadvisor-frontend:latest --file=./client/Dockerfile --severity-threshold=high
+        run: snyk container test foodadvisor-frontend:latest --file=./client/dockerfile --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
