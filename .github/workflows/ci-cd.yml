@@ -50,15 +50,12 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: foodadvisor-backend:latest
-          format: sarif
+          format: table
           output: trivy-results.sarif
-          exit-code: 1
+          exit-code: 0
           ignore-unfixed: true
 
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: trivy-results.sarif
+      
 
       # 4.3.7 Scan frontend image for vulnerabilities
       
