@@ -1,0 +1,10 @@
+# Ignore known CVEs that are not exploitable or deemed low risk
+CVE-2023-12345
+CVE-2022-56789
+
+# Ignore some Node.js-related vulnerabilities
+CVE-2021-3807
+CVE-2021-23369
+
+# Optional comment: You can document why you ignored a CVE
+# CVE-2020-8284 - Not relevant in our environment, no external curl access
