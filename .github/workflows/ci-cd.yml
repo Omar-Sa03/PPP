@@ -50,34 +50,18 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: foodadvisor-backend:latest
-          format: table
+          format: sarif
+          output: trivy-results.sarif
           exit-code: 1
           ignore-unfixed: true
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: trivy-results.sarif
 
       # 4.3.7 Scan frontend image for vulnerabilities
-      - name: Trivy scan frontend image
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: foodadvisor-frontend:latest
-          format: table
-          exit-code: 1
-          ignore-unfixed: true
-
-      # 4.3.7 Scan frontend image for vulnerabilities
-      - name: Trivy scan frontend image
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: foodadvisor-frontend:latest
-          format: table
-          exit-code: 1
-          ignore-unfixed: true
-          
-      # 4.4.1 Log in to Docker Hub
-      - name: Docker Hub login
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | \
-            docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
+      
       # 4.4.2 Tag and push both images
       - name: Push containers to registry
         run: |
