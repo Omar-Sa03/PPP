@@ -21,7 +21,22 @@ jobs:
         with:
           node-version: '18'
 
-      # 4.3.3 Static code analysis with SonarCloud
+      # 4.3.3 Static code analysis with SonarCloud3
+      - name: Before SonarCloud Scan
+        run: echo "About to run SonarCloud"
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          organization: ${{ secrets.SONAR_ORG }}
+          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          token: ${{ secrets.SONAR_TOKEN }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: After SonarCloud Scan
+        run: echo "Finished SonarCloud step"
+
       
 
       # 4.3.4 Build Strapi backend image
