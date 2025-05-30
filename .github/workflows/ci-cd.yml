@@ -45,8 +45,32 @@ jobs:
         run: docker build -t foodadvisor-frontend:latest ./client
 
       # 4.3.6 Scan backend image for vulnerabilities
-      
+            # 4.3.6 Scan backend image for vulnerabilities
+      - name: Trivy scan backend image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: foodadvisor-backend:latest
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+
       # 4.3.7 Scan frontend image for vulnerabilities
+      - name: Trivy scan frontend image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: foodadvisor-frontend:latest
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+
+      # 4.3.7 Scan frontend image for vulnerabilities
+      - name: Trivy scan frontend image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: foodadvisor-frontend:latest
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
           
       # 4.4.1 Log in to Docker Hub
       - name: Docker Hub login
