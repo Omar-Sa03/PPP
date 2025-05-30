@@ -13,6 +13,7 @@ jobs:
     steps:
       # 4.3.1 Checkout your repo
       - name: Checkout code
+
         uses: actions/checkout@v3
 
       # 4.3.2 Install Node.js (v18)
@@ -27,6 +28,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
+
           args: >
             -Dsonar.projectKey=PPP
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
@@ -74,3 +76,4 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/foodadvisor-frontend:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/foodadvisor-frontend:latest
 #
+sdjhrjrzhkqjS
