@@ -76,4 +76,4 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/foodadvisor-frontend:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/foodadvisor-frontend:latest
 #
-sdjhrjrzhkqjS
+qdfsgh
