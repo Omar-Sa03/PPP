@@ -63,6 +63,15 @@ jobs:
           format: table
           exit-code: 0
           ignore-unfixed: true
+          ignore-policy: .trivyignore
+            # Snyk Scan - Backend
+      - name: Snyk Scan Backend
+        uses: snyk/actions/setup@v1
+        with:
+          version: latest
+      - run: snyk container test foodadvisor-backend:latest --file=./api/Dockerfile --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}-file=./api/Dockerfile
           
       # 4.4.1 Log in to Docker Hub
       - name: Docker Hub login
