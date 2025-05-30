@@ -60,6 +60,7 @@ jobs:
       # 4.4.2 Tag and push both images
       - name: Push containers to registry
         run: |
+        
           docker tag foodadvisor-backend:latest \
             ${{ secrets.DOCKER_USERNAME }}/foodadvisor-backend:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/foodadvisor-backend:latest
