@@ -64,14 +64,23 @@ jobs:
           exit-code: 0
           ignore-unfixed: true
           ignore-policy: .trivyignore
-            # Snyk Scan - Backend
-      - name: Snyk Scan Backend
-        uses: snyk/actions/setup@v1
-        with:
-          version: latest
-      - run: snyk container test foodadvisor-backend:latest --file=./api/Dockerfile --severity-threshold=high
+      # 4.3.8 Snyk Scan - Backend
+            # Install Snyk CLI
+      - name: Set up Snyk CLI
+        uses: snyk/actions/setup@master
+
+      # Scan backend image
+      - name: Snyk scan backend
+        run: snyk container test foodadvisor-backend:latest --file=./api/Dockerfile --severity-threshold=high
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}-file=./api/Dockerfile
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Scan frontend image
+      - name: Snyk scan frontend
+        run: snyk container test foodadvisor-frontend:latest --file=./client/Dockerfile --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
           
       # 4.4.1 Log in to Docker Hub
       - name: Docker Hub login
