@@ -63,7 +63,8 @@ jobs:
           format: table
           exit-code: 0
           ignore-unfixed: true
-          ignore-policy: .trivyignore
+        
+
       # 4.3.8 Snyk Scan - Backend
             # Install Snyk CLI
       - name: Set up Snyk CLI
