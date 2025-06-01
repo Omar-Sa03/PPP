@@ -40,8 +40,9 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v2
         
         env:
-          SONAR_TOKEN: $SONAR_TOKEN
-
+             SONAR_TOKEN: $SONAR_TOKEN
+             SONAR_PROJECT_KEY: $SONAR_PROJECT_KEY
+             SONAR_ORGANIZATION: $SONAR_ORGANIZATION
       - name: After SonarCloud Scan
         run: echo "Finished SonarCloud step"
 
