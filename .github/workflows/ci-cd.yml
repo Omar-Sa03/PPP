@@ -21,12 +21,18 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Load Infisical secrets
+      # 3. Install Infisical CLI (official method)
+      - name: Install Infisical CLI
         run: |
-          docker run --rm \
-            -e INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN }} \
-            infisical/infisical:latest \
-            inject --env production --no-cache --command "echo 'Secrets loaded'"
+          sudo apt-get update
+          sudo apt-get install -y curl gnupg
+          curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | sudo -E bash
+          sudo apt-get install -y infisical
+
+      # 4. Inject secrets using Infisical
+      - name: Inject secrets from Infisical
+        run: |
+          infisical inject --token ${{ secrets.INFISICAL_TOKEN }} --env production --no-cache --command "printenv | grep -iE 'DB|KEY|SECRET|TOKEN' || echo 'Secrets injected.'"
 
       
         # 4.3.3 Static code analysis with SonarCloud3
