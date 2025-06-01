@@ -1,5 +1,5 @@
 # Use Node 16 as base image(Based on Debian 10)
-FROM node:20-slim
+FROM node:16 
 
 # Set working directory
 WORKDIR /app
