@@ -23,7 +23,8 @@ jobs:
 
       - name: Install Infisical CLI
         run: |
-            curl -sSfL https://infisical.com/downloads/cli/install.sh | sh 
+            curl -sSf https://raw.githubusercontent.com/infisical/infisical-cli/main/scripts/install.sh | sh
+            echo "$HOME/.infisical/bin" >> $GITHUB_PATH
 
       - name: Load Infisical secrets
         run: infisical inject --token ${{ secrets.INFISICAL_TOKEN }} --env production --no-cache --command "echo 'Secrets loaded'"
