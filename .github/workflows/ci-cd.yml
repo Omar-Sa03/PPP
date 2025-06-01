@@ -32,7 +32,13 @@ jobs:
       - name: Inject secrets from Infisical
         run: |
           infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- printenv | grep -iE 'SONAR_TOKEN|SONAR_PROJECT_KEY|SONAR_ORGANIZATION|SNYK_TOKEN|DOCKER_USERNAME'
-
+      - name: Debug Sonar Variables
+        run: |
+            infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- bash -c '
+              echo "SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY"
+              echo "SONAR_ORGANIZATION=$SONAR_ORGANIZATION"
+              echo "SONAR_TOKEN=${#SONAR_TOKEN} chars"
+            '
       # 5. SonarCloud Scan using Infisical
       - name: SonarCloud Scan via Infisical
         run: |
@@ -48,13 +54,7 @@ jobs:
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_TOKEN
           '
-      - name: Debug Sonar Variables
-        run: |
-            infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- bash -c '
-              echo "SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY"
-              echo "SONAR_ORGANIZATION=$SONAR_ORGANIZATION"
-              echo "SONAR_TOKEN=${#SONAR_TOKEN} chars"
-            '
+      
 
 
 
