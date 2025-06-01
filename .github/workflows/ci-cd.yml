@@ -32,7 +32,9 @@ jobs:
       # 4. Inject secrets using Infisical
       - name: Inject secrets from Infisical
         run: |
-         infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env production --no-cache -- printenv | grep -iE 'DB|KEY|SECRET|TOKEN' || echo 'Secrets injected.'
+         infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development --no-cache -- bash -c "
+           echo 'Secrets injected from Infisical development environment'
+           printenv | grep -iE 'DB|KEY|SECRET|TOKEN'
 
 
       
@@ -88,9 +90,7 @@ jobs:
       # Scan backend image
       - name: Snyk scan backend
         run: snyk container test foodadvisor-backend:latest --file=./api/dockerfile --severity-threshold=high || true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
+       
       # Scan frontend image
       - name: Snyk scan frontend
         run: snyk container test foodadvisor-frontend:latest --file=./client/dockerfile --severity-threshold=high || true
