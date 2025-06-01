@@ -33,9 +33,6 @@ jobs:
       - name: Inject secrets from Infisical
         run: |
           infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- bash -c 'echo "Secrets injected from Infisical development environment"; printenv | grep -iE "DB|KEY|SECRET|TOKEN"'
-
-
-      
         # 4.3.3 Static code analysis with SonarCloud3
       - name: Before SonarCloud Scan
         run: echo "About to run SonarCloud"
@@ -44,7 +41,7 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v2
         
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: secrets.SONAR_TOKEN
 
       - name: After SonarCloud Scan
         run: echo "Finished SonarCloud step"
@@ -93,7 +90,7 @@ jobs:
       - name: Snyk scan frontend
         run: snyk container test foodadvisor-frontend:latest --file=./client/dockerfile --severity-threshold=high || true
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: secrets.SNYK_TOKEN 
 
           
       # 4.4.1 Log in to Docker Hub
