@@ -36,7 +36,7 @@ jobs:
         run: |
             infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- bash -c '
               echo "SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY"
-              echo "SONAR_ORG=$SONAR_ORGANIZATION"
+              echo "SONAR_ORG=$SONAR_ORG"
               echo "SONAR_TOKEN=${#SONAR_TOKEN} chars"
             '
       # 5. SonarCloud Scan using Infisical
