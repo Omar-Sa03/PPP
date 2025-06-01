@@ -21,16 +21,15 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Infisical CLI
-        run: |
-          curl -sSf https://raw.githubusercontent.com/infisical/infisical-cli/main/scripts/install.sh | sh
-          echo "$HOME/.infisical/bin" >> $GITHUB_PATH
-          export PATH="$HOME/.infisical/bin:$PATH"
-          infisical --version
-
       - name: Load Infisical secrets
-        run: infisical inject --token ${{ secrets.INFISICAL_TOKEN }} --env production --no-cache --command "echo 'Secrets loaded'"
-      # 4.3.3 Static code analysis with SonarCloud3
+        run: |
+          docker run --rm \
+            -e INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN }} \
+            infisical/infisical:latest \
+            inject --env production --no-cache --command "echo 'Secrets loaded'"
+
+      
+        # 4.3.3 Static code analysis with SonarCloud3
       - name: Before SonarCloud Scan
         run: echo "About to run SonarCloud"
 
