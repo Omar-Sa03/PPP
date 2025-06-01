@@ -32,9 +32,7 @@ jobs:
       # 4. Inject secrets using Infisical
       - name: Inject secrets from Infisical
         run: |
-         infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development --no-cache -- bash -c "
-           echo 'Secrets injected from Infisical development environment'
-           printenv | grep -iE 'DB|KEY|SECRET|TOKEN'
+          infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development --no-cache -- bash -c 'echo "Secrets injected from Infisical development environment"; printenv | grep -iE "DB|KEY|SECRET|TOKEN"'
 
 
       
