@@ -9,13 +9,12 @@ on:
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
-
     steps:
-      # 4.3.1 Checkout your repo
+      # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 4.3.2 Install Node.js (v18)
+      # 2. Install Node.js (v18)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -29,41 +28,35 @@ jobs:
           curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | sudo -E bash
           sudo apt-get install -y infisical
 
-      # 4. Inject secrets using Infisical
+      # 4. Inject secrets from Infisical (for printing/debugging only)
       - name: Inject secrets from Infisical
         run: |
-          infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- bash -c '
-            echo "SONAR_TOKEN=$(printenv SONAR_TOKEN)" >> $GITHUB_ENV
-            echo "SONAR_PROJECT_KEY=$(printenv SONAR_PROJECT_KEY)" >> $GITHUB_ENV
-            echo "SONAR_ORGANIZATION=$(printenv SONAR_ORGANIZATION)" >> $GITHUB_ENV
-            echo "SNYK_TOKEN=$(printenv SNYK_TOKEN)" >> $GITHUB_ENV
-          '
+          infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- printenv | grep -iE 'SONAR_TOKEN|SONAR_PROJECT_KEY|SONAR_ORGANIZATION|SNYK_TOKEN|DOCKER_USERNAME'
 
-      # 4.3.3 SonarCloud Scan
-      - name: Before SonarCloud Scan
-        run: echo "About to run SonarCloud"
+      # 5. SonarCloud Scan using Infisical
+      - name: SonarCloud Scan (via Infisical)
+        run: |
+          infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- \
+            docker run --rm \
+              -e SONAR_TOKEN \
+              -e SONAR_PROJECT_KEY \
+              -e SONAR_ORGANIZATION \
+              -v "$(pwd):/usr/src" \
+              sonarsource/sonar-scanner-cli \
+              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+              -Dsonar.organization=$SONAR_ORGANIZATION \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=$SONAR_TOKEN
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          args: >
-            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
-        env:
-          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
-
-      - name: After SonarCloud Scan
-        run: echo "Finished SonarCloud step"
-
-      # 4.3.4 Build Strapi backend image
+      # 6. Build backend container
       - name: Build backend container
         run: docker build -t foodadvisor-backend:latest ./api
 
-      # 4.3.5 Build Next.js frontend image
+      # 7. Build frontend container
       - name: Build frontend container
         run: docker build -t foodadvisor-frontend:latest ./client
 
-      # 4.3.6 Scan backend image for vulnerabilities
+      # 8. Trivy scan backend
       - name: Trivy scan backend image
         uses: aquasecurity/trivy-action@master
         with:
@@ -72,7 +65,7 @@ jobs:
           exit-code: 0
           ignore-unfixed: true
 
-      # 4.3.7 Scan frontend image for vulnerabilities
+      # 9. Trivy scan frontend
       - name: Trivy scan frontend image
         uses: aquasecurity/trivy-action@master
         with:
@@ -81,28 +74,34 @@ jobs:
           exit-code: 0
           ignore-unfixed: true
 
-      # 4.3.8 Snyk Scan - Backend and Frontend
+      # 10. Set up Snyk CLI
       - name: Set up Snyk CLI
         uses: snyk/actions/setup@master
 
-      - name: Authenticate Snyk
-        run: snyk auth ${{ env.SNYK_TOKEN }}
-
+      # 11. Snyk scan backend
       - name: Snyk scan backend
-        run: snyk container test foodadvisor-backend:latest --file=./api/dockerfile --severity-threshold=high || true
+        run: |
+          infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- \
+            snyk container test foodadvisor-backend:latest --file=./api/dockerfile --severity-threshold=high || true
 
+      # 12. Snyk scan frontend
       - name: Snyk scan frontend
-        run: snyk container test foodadvisor-frontend:latest --file=./client/dockerfile --severity-threshold=high || true
+        run: |
+          infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- \
+            snyk container test foodadvisor-frontend:latest --file=./client/dockerfile --severity-threshold=high || true
 
-      # 4.4.1 Log in to Docker Hub
+      # 13. Docker Hub login
       - name: Docker Hub login
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- \
+            bash -c 'echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin'
 
-      # 4.4.2 Tag and push both images
-      - name: Push containers to registry
+      # 14. Push containers to registry
+      - name: Push containers to Docker Hub
         run: |
-          docker tag foodadvisor-backend:latest ${{ secrets.DOCKER_USERNAME }}/foodadvisor-backend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/foodadvisor-backend:latest
-          docker tag foodadvisor-frontend:latest ${{ secrets.DOCKER_USERNAME }}/foodadvisor-frontend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/foodadvisor-frontend:latest
+          infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- bash -c '
+            docker tag foodadvisor-backend:latest $DOCKER_USERNAME/foodadvisor-backend:latest
+            docker push $DOCKER_USERNAME/foodadvisor-backend:latest
+            docker tag foodadvisor-frontend:latest $DOCKER_USERNAME/foodadvisor-frontend:latest
+            docker push $DOCKER_USERNAME/foodadvisor-frontend:latest
+          '
