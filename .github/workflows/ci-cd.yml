@@ -32,7 +32,8 @@ jobs:
       # 4. Inject secrets using Infisical
       - name: Inject secrets from Infisical
         run: |
-          infisical inject --token ${{ secrets.INFISICAL_TOKEN }} --env production --no-cache --command "printenv | grep -iE 'DB|KEY|SECRET|TOKEN' || echo 'Secrets injected.'"
+         infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env production --no-cache -- printenv | grep -iE 'DB|KEY|SECRET|TOKEN' || echo 'Secrets injected.'
+
 
       
         # 4.3.3 Static code analysis with SonarCloud3
