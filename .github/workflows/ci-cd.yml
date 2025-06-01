@@ -34,20 +34,21 @@ jobs:
           infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- printenv | grep -iE 'SONAR_TOKEN|SONAR_PROJECT_KEY|SONAR_ORGANIZATION|SNYK_TOKEN|DOCKER_USERNAME'
 
       # 5. SonarCloud Scan using Infisical
-      - name: SonarCloud Scan (via Infisical)
+      - name: SonarCloud Scan via Infisical
         run: |
           infisical run --token ${{ secrets.INFISICAL_TOKEN }} --env development -- bash -c '
             docker run --rm \
               -e SONAR_TOKEN="$SONAR_TOKEN" \
               -e SONAR_PROJECT_KEY="$SONAR_PROJECT_KEY" \
               -e SONAR_ORGANIZATION="$SONAR_ORGANIZATION" \
-              -v "$(pwd):/usr/src" \
+              -v "$PWD:/usr/src" \
               sonarsource/sonar-scanner-cli \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORGANIZATION \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_TOKEN
           '
+
 
 
       # 6. Build backend container
